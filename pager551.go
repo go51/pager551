@@ -4,6 +4,7 @@ import "strconv"
 
 type pager struct {
 	AllItems     int64
+	AllPage      int64
 	ItemsPerPage int64
 	Page         int64
 	Prev         *pageItem
@@ -38,25 +39,25 @@ func (p *pager) load() {
 		return
 	}
 
-	max := p.AllItems / p.ItemsPerPage
+	p.AllPage = p.AllItems / p.ItemsPerPage
 	if p.AllItems%p.ItemsPerPage != 0 {
-		max++
+		p.AllPage++
 	}
 
-	if max > 5 {
+	if p.AllPage > 5 {
 		p.minPage = p.Page - 2
 		p.maxPage = p.Page + 2
 		switch {
 		case p.minPage < 1:
 			p.minPage = 1
 			p.maxPage = p.minPage + 4
-		case p.maxPage > max:
-			p.maxPage = max
+		case p.maxPage > p.AllPage:
+			p.maxPage = p.AllPage
 			p.minPage = p.maxPage - 4
 		}
 	} else {
 		p.minPage = 1
-		p.maxPage = max
+		p.maxPage = p.AllPage
 	}
 
 	p.setPageItems()
